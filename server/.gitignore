@@ -3,3 +3,6 @@ node_modules
 .env
 
 yarn-error.*
+
+tmp/uploads/*
+!tmp/uploads/.gitkeep

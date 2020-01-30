@@ -4,6 +4,7 @@ import express from 'express';
 
 import cors from 'cors';
 import morgan from 'morgan';
+import { resolve } from 'path';
 import Youch from 'youch';
 
 import 'express-async-errors';
@@ -25,6 +26,11 @@ class App {
     this.server.use(cors());
     this.server.use(morgan('dev'));
     this.server.use(express.json());
+
+    this.server.use(
+      '/files',
+      express.static(resolve(__dirname, '..', 'tmp', 'uploads'))
+    );
   }
 
   routes() {
