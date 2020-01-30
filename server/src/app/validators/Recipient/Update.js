@@ -3,12 +3,8 @@ import { object, string, number, boolean } from 'yup';
 export default async (req, res, next) => {
   try {
     const schema = object().shape({
-      name: string()
-        .strict(true)
-        .required('Name is required'),
-      street: string()
-        .strict(true)
-        .required('Street is required'),
+      name: string().strict(true),
+      street: string().strict(true),
       haveNumber: boolean().default(false),
       number: number()
         .integer()
@@ -17,15 +13,9 @@ export default async (req, res, next) => {
           haveNumber ? field.required('Number is required') : field
         ),
       complement: string().strict(true),
-      state: string()
-        .strict(true)
-        .required('State is required'),
-      city: string()
-        .strict(true)
-        .required('City is required'),
-      cep: string()
-        .strict(true)
-        .required('CEP is required'),
+      state: string().strict(true),
+      city: string().strict(true),
+      cep: string().strict(true),
     });
 
     await schema.validate(req.body, { abortEarly: false });

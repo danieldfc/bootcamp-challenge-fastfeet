@@ -6,6 +6,7 @@ class Recipient extends Model {
       {
         name: DataTypes.STRING,
         street: DataTypes.STRING,
+        haveNumber: DataTypes.VIRTUAL,
         number: DataTypes.INTEGER,
         complement: DataTypes.STRING,
         state: DataTypes.STRING,

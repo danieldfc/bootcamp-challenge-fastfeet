@@ -2,7 +2,7 @@ import { object, string } from 'yup';
 
 export default async (req, res, next) => {
   try {
-    const schema = await object().shape({
+    const schema = object().shape({
       email: string()
         .strict(true)
         .email()
