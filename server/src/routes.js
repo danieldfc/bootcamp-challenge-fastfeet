@@ -1,14 +1,14 @@
 import { Router } from 'express';
 
 import SessionController from './app/controllers/SessionController';
-import UserController from './app/controllers/UserController';
 
 import authMiddleware from './app/middlewares/auth';
 
+import validatorSessionStore from './app/validators/Session/Store';
+
 const routes = Router();
 
-routes.post('/users', UserController.store);
-routes.post('/sessions', SessionController.store);
+routes.post('/sessions', validatorSessionStore, SessionController.store);
 
 routes.use(authMiddleware);
 
