@@ -11,8 +11,14 @@ import OrderRegisteredMail from '../jobs/OrderRegisteredMail';
 
 class OrderController {
   async index(req, res) {
+    const { page = 1 } = req.query;
+    const limit = 20;
+
     const orders = await Order.findAll({
       where: { canceled_at: null },
+      order: ['start_date'],
+      limit,
+      offset: (page - 1) * limit,
       attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
       include: [
         {
@@ -33,6 +39,13 @@ class OrderController {
           model: Courier,
           as: 'deliveryman',
           attributes: ['id', 'name', 'email'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['id', 'name', 'path', 'url'],
+            },
+          ],
         },
         {
           model: File,
