@@ -51,7 +51,7 @@ class RecipientController {
 
     const recipient = await Recipient.findByPk(id_recipient);
 
-    if (name !== recipient) {
+    if (name !== recipient.name) {
       const checkRecipient = await Recipient.findOne({ where: { name } });
 
       if (checkRecipient) {
