@@ -3,7 +3,9 @@ import { Router } from 'express';
 import multer from 'multer';
 
 import CourierController from './app/controllers/CourierController';
+import CourierOrderController from './app/controllers/CourierOrderController';
 import FileController from './app/controllers/FileController';
+import ListOrderDeliveredController from './app/controllers/ListOrderDeliveredController';
 import OrderController from './app/controllers/OrderController';
 import RecipientController from './app/controllers/RecipientController';
 import SessionController from './app/controllers/SessionController';
@@ -44,6 +46,9 @@ routes.get('/orders', OrderController.index);
 routes.post('/orders', validatorOrderStore, OrderController.store);
 routes.put('/orders/:id', validatorOrderUpdate, OrderController.update);
 routes.delete('/orders/:id', OrderController.delete);
+
+routes.get('/deliveryman/:id/deliveries', CourierOrderController.index);
+routes.get('/deliveryman/:id/delivered', ListOrderDeliveredController.index);
 
 routes.post(
   '/files',

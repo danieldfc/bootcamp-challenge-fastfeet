@@ -4,10 +4,11 @@ import File from '../models/File';
 class CourierController {
   async index(req, res) {
     const { page = 1 } = req.query;
+    const limit = 20;
 
     const couriers = await Courier.findAll({
-      offset: (page - 1) * 20,
-      limit: 20,
+      limit,
+      offset: (page - 1) * limit,
       order: [['name', 'asc']],
       attributes: ['id', 'name', 'email'],
       include: [
