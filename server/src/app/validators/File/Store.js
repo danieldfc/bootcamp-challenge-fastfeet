@@ -1,22 +1,18 @@
-// import { object, setLocale, string } from 'yup';
+import { mixed, setLocale } from 'yup';
 
 export default async (req, res, next) => {
   try {
-    // setLocale({
-    //   mixed: {
-    //     notType: `File is required`,
-    //   },
-    // });
+    setLocale({
+      mixed: {
+        notType: 'File is required',
+      },
+    });
 
-    // const schema = object().shape({
-    //   file: object()
-    //     .shape({
-    //       name: string().required(),
-    //     })
-    //     .label('file'),
-    // });
+    const schema = mixed()
+      .required()
+      .label('file');
 
-    // await schema.validate(req.file, { abortEarly: false });
+    await schema.validate(req.file, { abortEarly: false });
 
     return next();
   } catch (err) {

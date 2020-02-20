@@ -10,9 +10,9 @@ import SessionController from './app/controllers/SessionController';
 
 import authMiddleware from './app/middlewares/auth';
 
-// import validatorFileStore from './app/validators/File/Store';
 import validatorCourierStore from './app/validators/Courier/Store';
 import validatorCourierUpdate from './app/validators/Courier/Update';
+import validatorFileStore from './app/validators/File/Store';
 import validatorOrderStore from './app/validators/Order/Store';
 import validatorOrderUpdate from './app/validators/Order/Update';
 import validatorRecipientStore from './app/validators/Recipient/Store';
@@ -47,8 +47,8 @@ routes.delete('/orders/:id', OrderController.delete);
 
 routes.post(
   '/files',
-  // validatorFileStore,
   upload.single('file'),
+  validatorFileStore,
   FileController.store
 );
 
