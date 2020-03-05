@@ -4,6 +4,7 @@ import multer from 'multer';
 
 import CourierController from './app/controllers/CourierController';
 import CourierOrderController from './app/controllers/CourierOrderController';
+import DeliveryProblemController from './app/controllers/DeliveryProblemController';
 import FileController from './app/controllers/FileController';
 import ListOrderDeliveredController from './app/controllers/ListOrderDeliveredController';
 import OrderController from './app/controllers/OrderController';
@@ -50,6 +51,8 @@ routes.delete('/orders/:id', OrderController.delete);
 routes.get('/deliveryman/:id/deliveries', CourierOrderController.index);
 routes.put('/deliveryman/:id_courier/order/:id', CourierOrderController.update);
 routes.get('/deliveryman/:id/delivered', ListOrderDeliveredController.index);
+
+routes.get('/delivery/problems', DeliveryProblemController.index);
 
 routes.post(
   '/files',
