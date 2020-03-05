@@ -53,6 +53,7 @@ routes.put('/deliveryman/:id_courier/order/:id', CourierOrderController.update);
 routes.get('/deliveryman/:id/delivered', ListOrderDeliveredController.index);
 
 routes.get('/delivery/problems', DeliveryProblemController.index);
+routes.get('/delivery/:id/problems', DeliveryProblemController.show);
 
 routes.post(
   '/files',
