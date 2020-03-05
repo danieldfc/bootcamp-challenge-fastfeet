@@ -9,7 +9,7 @@ class DeliveryProblemController {
     const { page = 1 } = req.query;
     const limit = 20;
     const deliveriesProblems = await DeliveryProblem.findAll({
-      order: [['created_at', 'asc']],
+      order: [['created_at', 'desc']],
       limit,
       offset: (page - 1) * 20,
       attributes: ['id', 'description'],
