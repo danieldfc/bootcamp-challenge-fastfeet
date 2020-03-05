@@ -68,15 +68,14 @@ class DeliveryProblemController {
     const { page = 1 } = req.query;
     const { id } = req.params;
 
-    const checkDeliveryProblem = await DeliveryProblem.findByPk(id);
+    const checkOrder = await Order.findByPk(id);
 
-    if (!checkDeliveryProblem) {
+    if (!checkOrder) {
       return res
         .status(404)
         .json({ error: { message: 'Delivery problem not found' } });
     }
-
-    const { delivery_id } = checkDeliveryProblem;
+    const delivery_id = checkOrder.id;
 
     const limit = 20;
     const deliveriesProblems = await DeliveryProblem.findAll({
