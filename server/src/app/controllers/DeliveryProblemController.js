@@ -65,6 +65,7 @@ class DeliveryProblemController {
   }
 
   async show(req, res) {
+    const { page = 1 } = req.query;
     const { id } = req.params;
 
     const checkDeliveryProblem = await DeliveryProblem.findByPk(id);
@@ -75,7 +76,14 @@ class DeliveryProblemController {
         .json({ error: { message: 'Delivery problem not found' } });
     }
 
-    const deliveriesProblems = await DeliveryProblem.findByPk(id, {
+    const { delivery_id } = checkDeliveryProblem;
+
+    const limit = 20;
+    const deliveriesProblems = await DeliveryProblem.findAll({
+      where: { delivery_id },
+      order: [['created_at', 'desc']],
+      limit,
+      offset: (page - 1) * 20,
       attributes: ['id', 'description'],
       include: [
         {
