@@ -48,6 +48,7 @@ routes.put('/orders/:id', validatorOrderUpdate, OrderController.update);
 routes.delete('/orders/:id', OrderController.delete);
 
 routes.get('/deliveryman/:id/deliveries', CourierOrderController.index);
+routes.put('/deliveryman/:id_courier/order/:id', CourierOrderController.update);
 routes.get('/deliveryman/:id/delivered', ListOrderDeliveredController.index);
 
 routes.post(
