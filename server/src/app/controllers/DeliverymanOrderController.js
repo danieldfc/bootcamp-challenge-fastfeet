@@ -9,20 +9,22 @@ import {
   parseISO,
 } from 'date-fns';
 
-import Courier from '../models/Courier';
+import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
 
-class CourierOrderController {
+class DeliverymanOrderController {
   async index(req, res) {
     const { page = 1 } = req.query;
     const { id: deliveryman_id } = req.params;
 
-    const courier = await Courier.findByPk(deliveryman_id);
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
 
-    if (!courier) {
-      return res.status(404).json({ error: { message: 'Courier not found' } });
+    if (!deliveryman) {
+      return res
+        .status(404)
+        .json({ error: { message: 'Deliveryman not found' } });
     }
 
     const limit = 20;
@@ -38,7 +40,7 @@ class CourierOrderController {
       },
       include: [
         {
-          model: Courier,
+          model: Deliveryman,
           as: 'deliveryman',
           attributes: ['id', 'name', 'email'],
           include: [
@@ -70,20 +72,50 @@ class CourierOrderController {
   }
 
   async update(req, res) {
-    const { end_date } = req.body;
-    const { id, id_courier } = req.params;
+    let { end_date } = req.body;
+    const { id, deliveryman_id } = req.params;
 
     /**
-     * verify exist courier and order
+     * verify exist deliveryman and order
      */
 
-    const checkCourier = await Courier.findByPk(id_courier);
+    const checkDeliveryman = await Deliveryman.findByPk(deliveryman_id);
 
-    if (!checkCourier) {
-      return res.status(404).json({ error: { message: 'Courier not found' } });
+    if (!checkDeliveryman) {
+      return res
+        .status(404)
+        .json({ error: { message: 'Deliveryman not found' } });
     }
 
-    const checkOrder = await Order.findByPk(id);
+    const checkOrder = await Order.findByPk(id, {
+      attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
+      include: [
+        {
+          model: Deliveryman,
+          as: 'deliveryman',
+          attributes: ['id', 'name', 'email'],
+        },
+        {
+          model: File,
+          as: 'signature_recipient',
+          attributes: ['id', 'name', 'path', 'url'],
+        },
+        {
+          model: Recipient,
+          as: 'recipient',
+          attributes: [
+            'id',
+            'name',
+            'street',
+            'number',
+            'complement',
+            'state',
+            'city',
+            'cep',
+          ],
+        },
+      ],
+    });
 
     if (!checkOrder) {
       return res.status(404).json({ error: { message: 'Order not found' } });
@@ -92,31 +124,27 @@ class CourierOrderController {
     /**
      * verify date
      */
-    const currentDate = new Date();
+    const start_date = new Date();
 
     if (
-      !isWithinInterval(currentDate, {
-        start: startOfHour(setHours(currentDate, 1)),
-        end: startOfHour(setHours(currentDate, 18)),
+      !isWithinInterval(start_date, {
+        start: startOfHour(setHours(start_date, 1)),
+        end: startOfHour(setHours(start_date, 18)),
       })
-    )
+    ) {
       return res.status(400).json({
         error: {
           message:
             'You can only withdraw the deliveries between 08:00h and 18:00h',
         },
       });
-
-    const order = await checkOrder.update({
-      start_date: currentDate,
-      end_date: parseISO(end_date),
-    });
+    }
 
     const ordersCollectedOnTheDay = await Order.findAndCountAll({
       where: {
-        deliveryman_id: id_courier,
+        deliveryman_id,
         start_date: {
-          [Op.between]: [startOfDay(currentDate), endOfDay(currentDate)],
+          [Op.between]: [startOfDay(start_date), endOfDay(start_date)],
         },
       },
     });
@@ -127,11 +155,15 @@ class CourierOrderController {
       });
     }
 
-    return res.json({
-      order,
-      countColletedTheDay: ordersCollectedOnTheDay.count,
+    end_date = parseISO(end_date);
+
+    const order = await checkOrder.update({
+      start_date,
+      end_date,
     });
+
+    return res.json(order);
   }
 }
 
-export default new CourierOrderController();
+export default new DeliverymanOrderController();

@@ -1,6 +1,6 @@
 import { parseISO, getHours } from 'date-fns';
 
-import Courier from '../models/Courier';
+import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
@@ -36,7 +36,7 @@ class OrderController {
           ],
         },
         {
-          model: Courier,
+          model: Deliveryman,
           as: 'deliveryman',
           attributes: ['id', 'name', 'email'],
           include: [
@@ -54,6 +54,7 @@ class OrderController {
         },
       ],
     });
+
     return res.json(orders);
   }
 
@@ -89,7 +90,7 @@ class OrderController {
      * Create order and send mail
      */
 
-    const deliveryman = await Courier.findByPk(deliveryman_id);
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
 
     if (!deliveryman) {
       return res
@@ -178,7 +179,7 @@ class OrderController {
       });
     }
 
-    const checkDeliveryman = await Courier.findByPk(deliveryman_id);
+    const checkDeliveryman = await Deliveryman.findByPk(deliveryman_id);
 
     if (!checkDeliveryman) {
       return res
@@ -186,7 +187,7 @@ class OrderController {
         .json({ error: { message: 'Delivery man not found' } });
     }
 
-    const checkRecipient = await Courier.findByPk(recipient_id);
+    const checkRecipient = await Recipient.findByPk(recipient_id);
 
     if (!checkRecipient) {
       return res
@@ -233,7 +234,7 @@ class OrderController {
           ],
         },
         {
-          model: Courier,
+          model: Deliveryman,
           as: 'deliveryman',
           attributes: ['id', 'name', 'email'],
         },

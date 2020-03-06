@@ -1,12 +1,12 @@
-import Courier from '../models/Courier';
+import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
-class CourierController {
+class DeliverymanController {
   async index(req, res) {
     const { page = 1 } = req.query;
     const limit = 20;
 
-    const couriers = await Courier.findAll({
+    const deliverymans = await Deliveryman.findAll({
       limit,
       offset: (page - 1) * limit,
       order: [['name', 'asc']],
@@ -20,18 +20,18 @@ class CourierController {
       ],
     });
 
-    return res.json(couriers);
+    return res.json(deliverymans);
   }
 
   async store(req, res) {
     const { email, avatar_id } = req.body;
 
-    const checkCourier = await Courier.findOne({ where: { email } });
+    const checkDeliveryman = await Deliveryman.findOne({ where: { email } });
 
-    if (checkCourier) {
+    if (checkDeliveryman) {
       return res
         .status(400)
-        .json({ error: { message: 'Courier already exist' } });
+        .json({ error: { message: 'Deliveryman already exist' } });
     }
 
     const checkFile = await File.findByPk(avatar_id);
@@ -40,9 +40,9 @@ class CourierController {
       return res.status(404).json({ error: { message: 'File not found' } });
     }
 
-    const { id } = await Courier.create(req.body);
+    const { id } = await Deliveryman.create(req.body);
 
-    const { name, avatar } = await Courier.findByPk(id, {
+    const { name, avatar } = await Deliveryman.findByPk(id, {
       include: [
         {
           model: File,
@@ -62,25 +62,27 @@ class CourierController {
 
   async update(req, res) {
     const { email, avatar_id } = req.body;
-    const { id: courier_id } = req.params;
+    const { id: deliveryman_id } = req.params;
 
-    const courier = await Courier.findByPk(courier_id);
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
 
-    if (!courier) {
-      return res.status(404).json({ error: { message: 'Courier not found' } });
+    if (!deliveryman) {
+      return res
+        .status(404)
+        .json({ error: { message: 'Deliveryman not found' } });
     }
 
-    if (email !== courier.email) {
-      const checkCourier = await Courier.findOne({ where: { email } });
+    if (email !== deliveryman.email) {
+      const checkDeliveryman = await Deliveryman.findOne({ where: { email } });
 
-      if (checkCourier) {
+      if (checkDeliveryman) {
         return res
           .status(400)
-          .json({ error: { message: 'Courier already exist' } });
+          .json({ error: { message: 'Deliveryman already exist' } });
       }
     }
 
-    if (avatar_id !== courier.avatar_id) {
+    if (avatar_id !== deliveryman.avatar_id) {
       const checkFile = await File.findByPk(avatar_id);
 
       if (!checkFile) {
@@ -88,8 +90,8 @@ class CourierController {
       }
     }
 
-    await courier.update(req.body);
-    const { id, name, avatar } = await Courier.findByPk(courier_id, {
+    await deliveryman.update(req.body);
+    const { id, name, avatar } = await Deliveryman.findByPk(deliveryman_id, {
       attributes: ['id', 'name', 'email'],
       include: [
         {
@@ -111,16 +113,18 @@ class CourierController {
   async delete(req, res) {
     const { id } = req.params;
 
-    const courier = await Courier.findByPk(id);
+    const deliveryman = await Deliveryman.findByPk(id);
 
-    if (!courier) {
-      return res.status(404).json({ error: { message: 'Courier not found' } });
+    if (!deliveryman) {
+      return res
+        .status(404)
+        .json({ error: { message: 'Deliveryman not found' } });
     }
 
-    await courier.destroy();
+    await deliveryman.destroy();
 
     return res.json();
   }
 }
 
-export default new CourierController();
+export default new DeliverymanController();

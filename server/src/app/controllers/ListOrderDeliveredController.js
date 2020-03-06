@@ -1,6 +1,6 @@
 import { Op } from 'sequelize';
 
-import Courier from '../models/Courier';
+import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 import Order from '../models/Order';
 import Recipient from '../models/Recipient';
@@ -10,10 +10,12 @@ class ListOrderDeliveredController {
     const { page = 1 } = req.query;
     const { id: deliveryman_id } = req.params;
 
-    const courier = await Courier.findByPk(deliveryman_id);
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
 
-    if (!courier) {
-      return res.status(404).json({ error: { message: 'Courier not found' } });
+    if (!deliveryman) {
+      return res
+        .status(404)
+        .json({ error: { message: 'Deliveryman not found' } });
     }
 
     const limit = 20;
@@ -31,7 +33,7 @@ class ListOrderDeliveredController {
       },
       include: [
         {
-          model: Courier,
+          model: Deliveryman,
           as: 'deliveryman',
           attributes: ['id', 'name', 'email'],
           include: [
