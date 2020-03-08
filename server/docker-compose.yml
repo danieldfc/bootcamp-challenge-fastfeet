@@ -1,0 +1,54 @@
+version: '3'
+
+services:
+  fastfeet-api:
+    build: .
+    container_name: 'fastfeet-api'
+    volumes:
+      - .:/home/node/api
+      - /home/node/api/node_modules
+    ports:
+      - '3333:3333'
+    depends_on:
+      - fastfeet-postgres
+      - fastfeet-redis
+    # command: USAGE IS THIS TOOL https://github.com/jwilder/dockerize
+    networks:
+      - fastfeet-network
+
+  fastfeet-redis:
+    image: redis:alpine
+    container_name: fastfeet-redis
+    volumes:
+      - fastfeet-redis-data:/data
+    ports:
+      - '6379:6379'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - fastfeet-network
+
+  fastfeet-postgres:
+    image: postgres:11
+    container_name: fastfeet-postgres
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - "fastfeet-postgres-data:/var/lib/postgresql/data"
+    ports:
+      - 5432:5432
+    networks:
+      - fastfeet-network
+
+volumes:
+  fastfeet-redis-data:
+
+  fastfeet-postgres-data:
+
+networks:
+  fastfeet-network:
+    driver: bridge
