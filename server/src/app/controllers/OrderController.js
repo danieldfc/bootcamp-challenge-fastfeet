@@ -1,4 +1,4 @@
-import { parseISO, getHours } from 'date-fns';
+import { parseISO, setHours, startOfHour, isWithinInterval } from 'date-fns';
 
 import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
@@ -73,15 +73,18 @@ class OrderController {
     /**
      * Verify start time
      */
+    const startDate = new Date(start_date);
 
-    const parsedHours = parseISO(start_date);
-    const hourStart = getHours(parsedHours);
-
-    if (hourStart < 8 || hourStart > 18) {
-      return res.status(400).json({
+    if (
+      !isWithinInterval(startDate, {
+        start: startOfHour(setHours(startDate, 8)),
+        end: startOfHour(setHours(startDate, 18)),
+      })
+    ) {
+      return res.status(401).json({
         error: {
-          hourStart,
-          message: 'Your start time must be between 8am and 6pm!',
+          message:
+            'You can only withdraw the deliveries between 08:00h and 18:00h',
         },
       });
     }
@@ -90,7 +93,9 @@ class OrderController {
      * Create order and send mail
      */
 
-    const deliveryman = await Deliveryman.findByPk(deliveryman_id);
+    const deliveryman = await Deliveryman.findByPk(deliveryman_id, {
+      attributes: ['id', 'name', 'email'],
+    });
 
     if (!deliveryman) {
       return res
@@ -98,7 +103,18 @@ class OrderController {
         .json({ error: { message: 'Deliveryman does not exist' } });
     }
 
-    const recipient = await Recipient.findByPk(recipient_id);
+    const recipient = await Recipient.findByPk(recipient_id, {
+      attributes: [
+        'id',
+        'name',
+        'street',
+        'number',
+        'complement',
+        'state',
+        'city',
+        'cep',
+      ],
+    });
 
     if (!recipient) {
       return res
@@ -107,37 +123,16 @@ class OrderController {
     }
 
     const { id, canceled_at } = await Order.create({
-      ...req.body,
-      start_date: parsedHours,
+      product,
+      recipient_id,
+      deliveryman_id,
+      start_date: startDate,
     });
 
-    const { id: id_deliveryman, name, email } = deliveryman;
-    const {
-      id: id_recipient,
-      name: name_recipient,
-      street,
-      number,
-      complement,
-      state,
-      city,
-      cep,
-    } = recipient;
-
     await Queue.add(OrderRegisteredMail.key, {
-      deliveryman: {
-        name,
-        email,
-      },
+      deliveryman,
       product,
-      recipient: {
-        name: name_recipient,
-        street,
-        number,
-        complement,
-        state,
-        city,
-        cep,
-      },
+      recipient,
     });
 
     return res.json({
@@ -145,21 +140,8 @@ class OrderController {
       product,
       start_date,
       canceled_at,
-      deliveryman: {
-        id: id_deliveryman,
-        name,
-        email,
-      },
-      recipient: {
-        id: id_recipient,
-        name: name_recipient,
-        street,
-        number,
-        complement,
-        state,
-        city,
-        cep,
-      },
+      deliveryman,
+      recipient,
     });
   }
 

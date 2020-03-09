@@ -2,10 +2,13 @@ import './bootstrap';
 
 import express from 'express';
 
+import * as Sentry from '@sentry/node';
 import cors from 'cors';
 import morgan from 'morgan';
 import { resolve } from 'path';
 import Youch from 'youch';
+
+import sentryConfig from './config/sentry';
 
 import 'express-async-errors';
 
@@ -17,12 +20,15 @@ class App {
   constructor() {
     this.server = express();
 
+    Sentry.init(sentryConfig);
+
     this.middlewares();
     this.routes();
     this.exceptionHandler();
   }
 
   middlewares() {
+    this.server.use(Sentry.Handlers.requestHandler());
     this.server.use(cors());
     this.server.use(morgan('dev'));
     this.server.use(express.json());
@@ -35,6 +41,7 @@ class App {
 
   routes() {
     this.server.use(routes);
+    this.server.use(Sentry.Handlers.errorHandler());
   }
 
   exceptionHandler() {
