@@ -1,3 +1,5 @@
+import { Op } from 'sequelize';
+
 import { parseISO, setHours, startOfHour, isWithinInterval } from 'date-fns';
 
 import Deliveryman from '../models/Deliveryman';
@@ -11,12 +13,16 @@ import OrderRegisteredMail from '../jobs/OrderRegisteredMail';
 
 class OrderController {
   async index(req, res) {
-    const { page = 1 } = req.query;
+    const { page = 1, product = '' } = req.query;
     const limit = 20;
 
     const orders = await Order.findAll({
-      where: { canceled_at: null },
-      order: ['start_date'],
+      where: {
+        product: {
+          [Op.iLike]: `%${product}%`,
+        },
+      },
+      order: [['start_date', 'desc']],
       limit,
       offset: (page - 1) * limit,
       attributes: ['id', 'product', 'canceled_at', 'start_date', 'end_date'],
