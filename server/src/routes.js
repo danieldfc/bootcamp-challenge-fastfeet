@@ -13,6 +13,8 @@ import SessionController from './app/controllers/SessionController';
 
 import authMiddleware from './app/middlewares/auth';
 
+import validatorDeliverymanOrderUpdate from './app/validators/Deliveryman/Order/Update';
+import validatorDeliverymanProblemStore from './app/validators/Deliveryman/Problem/Store';
 import validatorDeliverymanStore from './app/validators/Deliveryman/Store';
 import validatorDeliverymanUpdate from './app/validators/Deliveryman/Update';
 import validatorFileStore from './app/validators/File/Store';
@@ -60,13 +62,18 @@ routes.delete('/orders/:id', OrderController.delete);
 routes.get('/deliveryman/:id/deliveries', DeliverymanOrderController.index);
 routes.put(
   '/deliveryman/:deliveryman_id/order/:id',
+  validatorDeliverymanOrderUpdate,
   DeliverymanOrderController.update
 );
 routes.get('/deliveryman/:id/delivered', ListOrderDeliveredController.index);
 
 routes.get('/delivery/problems', DeliveryProblemController.index);
 routes.get('/delivery/:id/problems', DeliveryProblemController.show);
-routes.post('/delivery/:id/problems', DeliveryProblemController.store);
+routes.post(
+  '/delivery/:id/problems',
+  validatorDeliverymanProblemStore,
+  DeliveryProblemController.store
+);
 routes.delete('/problem/:id/cancel-delivery', DeliveryProblemController.delete);
 
 routes.post(
