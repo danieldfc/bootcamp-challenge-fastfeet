@@ -110,6 +110,10 @@ E executar também os seeders, com o comando:
 $ yarn sequelize db:seed:all
 ```
 
+## Insomnia
+
+Existe um arquivo, criado para você não ficar perdido na hora de criar as rotas, ou de testar algumas já implementadas, ele é o `insomnia.json`, você importará no software [Insomnia](https://insomnia.rest).
+
 ## Pronto?
 
 Sim!! Agora é só executar o script `dev`, que você estará conseguindo executar normalmente a aplicação, com o comando:
