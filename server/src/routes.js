@@ -31,6 +31,7 @@ routes.post('/sessions', validatorSessionStore, SessionController.store);
 
 routes.use(authMiddleware);
 
+routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', validatorRecipientStore, RecipientController.store);
 routes.put(
   '/recipients/:id',
