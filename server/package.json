@@ -5,12 +5,8 @@
   "author": "Daniel Felizardo <daniel.david772@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "predev": "sequelize db:migrate",
     "dev": "nodemon src/server.js",
     "queue": "nodemon src/queue.js",
-    "pretest": "NODE_ENV=test sequelize db:migrate",
-    "test": "NODE_ENV=test jest",
-    "posttest": "NODE_ENV=test sequelize db:migrate:undo:all",
     "lint": "eslint --fix src --ext .js",
     "build": "sucrase ./src -d ./dist --transforms imports"
   },
