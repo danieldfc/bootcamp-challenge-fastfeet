@@ -1,12 +1,19 @@
+import { Op } from 'sequelize';
+
 import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
 class DeliverymanController {
   async index(req, res) {
-    const { page = 1 } = req.query;
+    const { page = 1, name = '' } = req.query;
     const limit = 20;
 
     const deliverymans = await Deliveryman.findAll({
+      where: {
+        name: {
+          [Op.iLike]: `%${name}%`,
+        },
+      },
       limit,
       offset: (page - 1) * limit,
       order: [['name', 'asc']],
